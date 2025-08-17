@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flip Clock Widget</title>
+  <style>
+    body {
+      background: #f5f1e6; /* light beige */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: 'Courier New', monospace;
+    }
+
+    .flip-clock {
+      display: flex;
+      gap: 15px;
+    }
+
+    .flip-card {
+      position: relative;
+      width: 100px;
+      height: 140px;
+      perspective: 1000px;
+    }
+
+    .flip-card .top,
+    .flip-card .bottom,
+    .flip-card .flip {
+      position: absolute;
+      width: 100%;
+      height: 50%;
+      line-height: 70px;
+      font-size: 72px;
+      font-weight: bold;
+      color: #3e2723;
+      background: #d6ccc2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 6px;
+      backface-visibility: hidden;
+    }
+
+    .top {
+      top: 0;
+      border-bottom: 2px solid #a1887f;
+    }
+
+    .bottom {
+      bottom: 0;
+      border-top: 2px solid #a1887f;
+    }
+
+    .flip {
+      top: 0;
+      transform-origin: bottom;
+      transform: rotateX(0deg);
+    }
+
+    .ampm {
+      font-size: 18px;
+      font-weight: bold;
+      color: #5c4033;
+      position: absolute;
+      bottom: -30px;
+      left: 5px;
+    }
+
+    @keyframes flipAnim {
+      0%   { transform: rotateX(0deg); }
+      100% { transform: rotateX(-90deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="flip-clock">
+    <div class="flip-card" id="hourCard">
+      <div class="top" id="hourTop">12</div>
+      <div class="bottom" id="hourBottom">12</div>
+      <div class="flip" id="hourFlip"></div>
+      <div class="ampm" id="ampm">AM</div>
+    </div>
+    <div class="flip-card" id="minuteCard">
+      <div class="top" id="minuteTop">00</div>
+      <div class="bottom" id="minuteBottom">00</div>
+      <div class="flip" id="minuteFlip"></div>
+    </div>
+  </div>
+
+  <script>
+    function updateCard(cardId, value) {
+      const top = document.getElementById(cardId + "Top");
+      const bottom = document.getElementById(cardId + "Bottom");
+      const flip = document.getElementById(cardId + "Flip");
+
+      if (top.innerText !== value) {
+        flip.innerText = top.innerText;
+        flip.style.animation = "flipAnim 0.7s forwards";
+
+        setTimeout(() => {
+          top.innerText = value;
+          bottom.innerText = value;
+          flip.style.animation = "none";
+        }, 700);
+      }
+    }
+
+    function updateClock() {
+      const now = new Date();
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+      let ampm = "AM";
+
+      if (hours >= 12) {
+        ampm = "PM";
+        if (hours > 12) hours -= 12;
+      }
+      if (hours === 0) hours = 12;
+
+      updateCard("hour", String(hours).padStart(2, "0"));
+      updateCard("minute", String(minutes).padStart(2, "0"));
+      document.getElementById("ampm").innerText = ampm;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+</html>
